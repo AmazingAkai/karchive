@@ -659,7 +659,12 @@ bool KZip::openArchive(QIODevice::OpenMode mode)
                 setErrorString(tr("Invalid ZIP file, file path name length is zero"));
                 return false;
             }
-            QByteArray varData = dev->read(namelen + extralen);
+            const int varDataDesiredLength = namelen + extralen;
+            const QByteArray varData = dev->read(varDataDesiredLength);
+            if (varData.length() < varDataDesiredLength) {
+                setErrorString(tr("Invalid ZIP file, file path name length is wrong"));
+                return false;
+            }
 
             ParseFileInfo extrafi;
             if (extralen) {
